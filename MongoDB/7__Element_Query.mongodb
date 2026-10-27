@@ -1,0 +1,32 @@
+db = db.getSiblingDB("school");
+
+db.students.insertMany([
+  { name: "Anjesh Kumar", age: 22, class: "Mtech", city: "Delhi" },
+  { name: "Ashito Kumar", age: 22.5, class: "Btech", city: "Mumbai" },
+  { name: "Aniket Kumar", age: "20", class: "Btech", city: "Delhi" },
+  { name: "Zubair Ahmad", age: 18, city: "Kolkata" },
+  { name: "Rajvir Kumar", age: 11, city: "Bihar" },
+]);
+
+//  $exists operator :: Returns documents where the field exists or not
+
+db.students.find({
+  class: { $exists: true },
+}); // Find students where class field exists
+
+// $type operator :: Returns documents where the field is of a specific type
+db.students.find({
+  age: { $type: "string" },
+}); // Find students where age field is of type string
+
+db.students.find({
+  age: { $type: "int" },
+}); // Find students where age field is of type int
+
+db.students.find({
+  age: { $type: "double" },
+}); // Find students where age field is of type double
+
+db.students.find({
+  age: { $type: ["int", "double"] },
+}); // Find students where age field is of type int or double

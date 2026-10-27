@@ -1,0 +1,91 @@
+db.products.insertMany([
+  { _id: 1, name: "Laptop", price: 1200, discounted: true },
+  { _id: 2, name: "Phone", price: 800, discounted: false },
+  { _id: 3, name: "Tablet", price: 600, discounted: true },
+]);
+
+db.users.insertMany([
+  { _id: 1, name: "Akshay Kumar", email: "akshay@email.com" },
+  { _id: 2, name: "Salman Khan" },
+  { _id: 3, name: "John Abraham", email: null },
+]);
+
+db.students.insertMany([
+  { _id: 1, name: "Akshay Kumar", percentage: 85 },
+  { _id: 2, name: "Salman Khan", percentage: 72 },
+  { _id: 3, name: "John Abraham", percentage: 58 },
+  { _id: 4, name: "Shahid Kapoor", percentage: 30 },
+]);
+
+// if-then-else
+// Thise operator allows you to perform conditional Logic in aggregation pipelines. Example: Categorize products based on price
+db.products.aggregate([
+  {
+    $project: {
+      name: 1,
+      price: 1,
+      priceCategory: {
+        $cond: {
+          if: { $gt: ["$price", 1000] }, // Check if price is greater than 1000
+          then: "Expensive", // If true, categorize as expensive
+          else: "Affordable", // If not, categorize as affordable
+        },
+      },
+    },
+  },
+]);
+
+// if-then-else With $cond operator
+// This operator allows you to apply conditional logic in aggregation pipelines. Example: Apply a discount if the product is discounted
+db.products.aggregate([
+  {
+    $project: {
+      name: 1,
+      price: 1,
+      OriginalPrice: "$price", // Keep original price
+      finalPrice: {
+        $cond: {
+          if: "$discounted", // Check if the product is discounted
+          then: { $multiply: ["$price", 0.9] }, // Apply 10% discount
+          else: "$price", // No discount
+        },
+      },
+    },
+  },
+]);
+
+// $ifNull operator
+// This operator allows you to provide a default value if a field is null. Example: Provide a default value for email if it is null
+db.users.aggregate([
+  {
+    $project: {
+      name: 1,
+      Email: { $ifNull: ["$email", "No Email Provided"] }, // Use $ifNull to provide a default value if email is null
+    },
+  },
+]);
+
+// $switch operator
+// This operator allows you to perform multiple conditional checks. Example: Assign grades based on percentage
+// Here, we categorize students based on their percentage scores into different grades.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1, // Include the student's name
+      percentage: 1, // Include the student's percentage
+      grade: {
+        // Use $switch to categorize students based on their percentage
+        $switch: {
+          branches: [
+            // Define the conditions for each grade
+            { case: { $gte: ["$percentage", 80] }, then: "Merit" }, // If percentage is 80 or above, assign "Merit"
+            { case: { $gte: ["$percentage", 60] }, then: "Ist Devision" }, // If percentage is 60 or above, assign "Ist Devision"
+            { case: { $gte: ["$percentage", 45] }, then: "IInd Devision" }, // If percentage is 45 or above, assign "IInd Devision"
+            { case: { $gte: ["$percentage", 33] }, then: "IIIrd Devision" }, // If percentage is 33 or above, assign "IIIrd Devision"
+          ],
+          default: "Fail", // Default case if none of the conditions match
+        },
+      },
+    },
+  },
+]);

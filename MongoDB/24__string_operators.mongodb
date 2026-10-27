@@ -1,0 +1,281 @@
+db.students.insertMany([
+  { _id: 1, name: "Akshay Kumar", dob: "jan 10 2010" },
+  { _id: 2, name: "Salman Khan", dob: "2010-02-03" },
+  { _id: 3, name: "Deepika Padukone", dob: "june 15 2010" },
+  { _id: 4, name: "John Abraham", dob: "WED jan 31 10:05:28 +03:30 2010" },
+  { _id: 5, name: "Katrina Kaif", dob: "dec 22 2010" },
+  { _id: 6, name: "    Test   " },
+]);
+
+db.students2.insertMany([
+  { _id: 1, firstName: "Akshay", lastName: "Kumar", age: 25 },
+  { _id: 2, firstName: "Salman", lastName: "Khan", age: 23 },
+  { _id: 3, firstName: "Deepika", lastName: "Padukone", age: 24 },
+  { _id: 4, firstName: "John", lastName: "Abraham", age: 25 },
+  { _id: 5, firstName: "Katrina", lastName: "Kaif", age: 23 },
+]);
+
+db.students3.insertMany([
+  { _id: 1, name: "Akshay Kumar", dob: ISODate("2008-01-15T08:15:39.736Z") },
+  { _id: 2, name: "Salman Khan", dob: ISODate("2009-08-01T08:15:39.736Z") },
+]);
+
+// $toUpper operator
+// Converts a string to uppercase.
+db.students.aggregate([
+  {
+    $project: {
+      upperCaseName: { $toUpper: "$name" },
+    },
+  },
+]);
+
+// $toLower operator
+// Converts a string to lowercase.
+db.students.aggregate([
+  {
+    $project: {
+      lowerCaseName: { $toLower: "$name" },
+    },
+  },
+]);
+
+//$strLenBytes
+// Returns the length of a string in bytes.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      lenghtInBytes: { $strLenBytes: "$name" },
+    },
+  },
+]);
+
+// $strLenCP
+// Returns the length of a string in code points.
+// This is useful for strings with multi-byte characters.
+// It counts each character as one, regardless of how many bytes it uses.
+// For example, "A" is 1 code point and 1 byte, while "𐍈" (a character from the Gothic script) is 1 code point but 4 bytes.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      lenghtInCodePoints: { $strLenCP: "$name" },
+    },
+  },
+]);
+
+// $strcasecmp operator
+// Compares two strings in a case-insensitive manner.
+// Returns 0 if the strings are equal, a negative number if the first string is less than the second, and a positive number if the first string is greater than the second.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      comparison: { $strcasecmp: ["$name", "Akshay Kumar"] }, // Case-insensitive comparison
+    },
+  },
+]);
+
+// $substrBytes operator
+// Extracts a substring from a string based on byte position.
+
+db.students.aggregate([
+  {
+    $project: {
+      substring: { $substrBytes: ["$name", 0, 5] }, // Extracting first 5 bytes
+    },
+  },
+]);
+
+// $substrCP operator
+// Extracts a substring from a string based on code point position.
+db.students.aggregate([
+  {
+    $project: {
+      substring: { $substrCP: ["$name", 0, 5] }, // Extracting first 5 code points
+    },
+  },
+]);
+
+// $replaceOne operator
+// Replaces the first occurrence of a substring within a string.
+db.students.aggregate([
+  {
+    $project: {
+      updateString: {
+        $replaceOne: { input: "$name", find: "Khan", replacement: "Kapoor," }, // Replacing first occurrence of "Khan" with "Kapoor,"
+      },
+    },
+  },
+]);
+
+// $replaceAll operator
+// Replaces all occurrences of a substring within a string.
+db.students.aggregate([
+  {
+    $project: {
+      updateString: {
+        $replaceAll: {
+          input: "My Name is Khan his name is Khan", // in reallife we use field like "$name" not a string
+          find: "Khan",
+          replacement: "Kapoor,",
+        },
+      },
+    },
+  },
+]);
+
+// $split operator
+// Splits a string into an array of substrings based on a specified delimiter.
+
+db.students.aggregate([
+  {
+    $project: {
+      words: { $split: ["$name", " "] }, // Splitting by space
+    },
+  },
+]);
+
+// $concat operator
+// Concatenates two or more strings together.
+db.students2.aggregate([
+  {
+    $project: {
+      fullName: { $concat: ["$firstName", " ", "$lastName"] }, // Concatenating first and last names you can replace space with any other string
+    },
+  },
+]);
+
+// $toString operator
+// Converts a value to a string. This is useful for converting non-string values to strings.
+
+db.students2.aggregate([
+  {
+    $project: {
+      stringField: { $toString: "$age" },
+    },
+  },
+]);
+
+//ltrim operator
+// Removes whitespace or specified characters from the beginning of a string. left trim
+db.students.aggregate([
+  {
+    $project: {
+      trinmmed: { $ltrim: { input: "$name", chars: " " } }, // Trimming leading spaces
+    },
+  },
+]);
+
+//$rtrim operator
+// Removes whitespace or specified characters from the end of a string. right trim
+db.students.aggregate([
+  {
+    $project: {
+      trinmmed: { $rtrim: { input: "$name", chars: " " } },
+    },
+  },
+]);
+
+// $trim operator
+// Removes whitespace or specified characters from both ends of a string.
+db.students.aggregate([
+  {
+    $project: {
+      trimmed: { $trim: { input: "$name", chars: " " } },
+    },
+  },
+]);
+
+// $dateFromString operator
+// Converts a string to a date object. This is useful for parsing date strings into MongoDB's date format.
+
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      date: { $dateFromString: { dateString: "$dob" } },
+    },
+  },
+]);
+
+// $dateToString operator
+// Converts a date object to a string in a specified format.
+
+db.students3.aggregate([
+  {
+    $project: {
+      name: 1,
+      date: { $dateToString: { format: "%Y-%m-%d", date: "$dob" } }, // Formatting date to "YYYY-MM-DD"
+    },
+  },
+]);
+
+// $indexOfBytes operator
+// Finds the index of a substring within a string, counting bytes.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      index: { $indexOfBytes: ["$name", "K"] },
+    },
+  },
+]);
+
+// $indexOfByetes with start and end
+// Finds the index of a substring within a string, counting bytes, starting from a specific position and ending at another.
+
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      index: { $indexOfBytes: ["$name", "k", 6, 15] },
+    },
+  },
+]);
+
+// $indexOfCP operator
+// Finds the index of a substring within a string, counting code points.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      index: { $indexOfCP: ["$name", "man"] },
+    },
+  },
+]);
+
+// $rexexpMatch operator
+// Matches a string against a regular expression and returns the first match.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      isMatch: { $regexMatch: { input: "$name", regex: "^Kat" } },
+    },
+  },
+]);
+
+// $regexFind operator
+// Finds the first occurrence of a substring that matches a regular expression.
+
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      isMatch: { $regexFind: { input: "$name", regex: "^Sa" } },
+    },
+  },
+]);
+
+// $regexFindAll operator
+// Finds all occurrences of substrings that match a regular expression.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      isMatch: { $regexFindAll: { input: "$name", regex: "K" } },
+    },
+  },
+]);

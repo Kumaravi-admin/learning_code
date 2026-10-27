@@ -1,0 +1,60 @@
+db = db.getSiblingDB("school");
+
+db.students.insertMany([
+  { _id: 1, name: "Akshay Kumar", percentage: 52 },
+  { _id: 2, name: "Salman Khan", percentage: 67 },
+  { _id: 3, name: "Deepika Padukone", percentage: 83 },
+  { _id: 4, name: "John Abraham", percentage: 49 },
+  { _id: 5, name: "Katrina Kaif", percentage: 77 },
+  { _id: 6, name: "Abhishek Bachan", percentage: 44 },
+  { _id: 7, name: "Shahid Kaupr", percentage: 25 },
+  { _id: 8, name: "Amir Khan", percentage: 38 },
+  { _id: 9, name: "Kriti Sanon", percentage: 91 },
+  { _id: 10, name: "Anushka Sharma", percentage: 59 },
+]);
+
+// $bucket + output
+// Grouping students based on their percentage into different buckets
+db.students.aggregate([
+  {
+    $bucket: {
+      groupBy: "$percentage", // Field to group by
+      boundaries: [33, 45, 60, 80, 100], // Boundaries for the buckets
+      default: "Fail Students", // Default bucket for values outside the boundaries
+      output: {
+        // Output fields for each bucket
+        Count: { $sum: 1 }, // Count of students in each bucket
+      },
+    },
+  },
+]);
+
+// $bucket without output
+// Grouping students based on their percentage without specifying output fields
+db.students.aggregate([
+  {
+    $bucket: {
+      // Grouping students based on their percentage
+      groupBy: "$percentage", // Field to group by
+      boundaries: [33, 45, 60, 80, 100], // Boundaries for the buckets
+      default: "Fail Students", // Default bucket for values outside the boundaries
+    },
+  },
+]);
+
+// $bucketAuto
+// Automatically grouping students into a specified number of buckets based on their percentage
+db.students.aggregate([
+  {
+    $bucketAuto: {
+      // Automatically grouping students into buckets
+      groupBy: "$percentage", // Field to group by
+      buckets: 3, // Number of buckets to create
+      output: {
+        Count: { $sum: 1 }, // Count of students in each bucket
+        Avrage_percentage: { $avg: "$percentage" }, // Average percentage of students in each bucket
+        Total_percentage: { $sum: "$percentage" }, // Total percentage of students in each bucket
+      },
+    },
+  },
+]);

@@ -1,0 +1,132 @@
+db.sales.insertMany([
+  { _id: 1, product: "Mobile", price: 100, quantity: 52 },
+  { _id: 2, product: "Laptop", price: 150, quantity: 65 },
+  { _id: 3, product: "Tablet", price: 120, quantity: 30 },
+]);
+
+// $add operator
+// Adding two fields or value together (performing addition operation)
+db.sales.aggregate([
+  {
+    $project: {
+      product: 1, // Including product field in the output
+      price: 1, // Including price field in the output
+      quantity: 1, // Including quantity field in the output
+      Result: { $add: ["$price", "$quantity"] }, // Adding price and quantity fields
+    },
+  },
+]);
+
+// $substract operator
+// Subtracting one field from another (performing subtraction operation)
+db.sales.aggregate([
+  {
+    $project: {
+      Result: { $subtract: ["$price", "$quantity"] }, // Subtracting quantity from price
+    },
+  },
+]);
+
+// $multiply operator
+// Multiplying two fields together (performing multiplication operation)
+db.sales.aggregate([
+  {
+    $project: {
+      Result: { $multiply: ["$price", "$quantity"] }, // Multiplying price and quantity fields
+    },
+  },
+]);
+
+// $divide operator
+// Dividing one field by another (performing division operation)
+// Note: Ensure that the divisor is not zero to avoid division by zero errors.
+db.sales.aggregate([
+  {
+    $project: {
+      Result: { $divide: [10, 2] }, // Dividing 10 by 2
+    },
+  },
+]);
+
+// $mod operator
+// Finding the remainder of a division operation (modulus operation)
+// Note: Ensure that the divisor is not zero to avoid division by zero errors.
+db.sales.aggregate([
+  {
+    $project: {
+      Result: { $mod: [10, 3] }, // Finding the remainder of 10 divided by 3
+    },
+  },
+]);
+
+//  $pow
+// Raising a number to the power of another number (exponentiation operation)
+// Note: The first argument is the base, and the second argument is the exponent.
+db.sales.aggregate([
+  {
+    $project: {
+      Result: { $pow: [2, 3] }, // Raising 2 to the power of 3
+    },
+  },
+]);
+
+// $sqrt operator
+// Calculating the square root of a number
+// Note: The argument should be a non-negative number.
+db.sales.aggregate([
+  {
+    $project: {
+      Result: { $sqrt: 16 }, // Calculating the square root of 16
+    },
+  },
+]);
+
+// $abs operator
+// Calculating the absolute value of a number
+db.sales.aggregate([
+  {
+    $project: {
+      Result: { $abs: -9.2 }, // Calculating the absolute value of -9.2
+    },
+  },
+]);
+
+// $ceil operator
+// Rounding a number up to the nearest integer
+db.sales.aggregate([
+  {
+    $project: {
+      Result: { $ceil: 9.2 }, // Rounding 9.2 up to the nearest integer
+    },
+  },
+]);
+
+// $floor operator
+// Rounding a number down to the nearest integer
+db.sales.aggregate([
+  {
+    $project: {
+      Result: { $floor: 9.2 }, // Rounding 9.2 down to the nearest integer
+    },
+  },
+]);
+
+// $round operator
+// Rounding a number to the nearest integer or specified decimal places if point value less thane 0.5 then it will round down otherwise it will round up
+db.sales.aggregate([
+  {
+    $project: {
+      Result: { $round: 9.2 }, // Rounding 9.2 to the nearest integer
+    },
+  },
+]);
+
+// $trunc operator
+// Truncating a number to remove the decimal part
+db.sales.aggregate([
+  {
+    $project: {
+      Result: { $trunc: 9.2 }, // Truncating 9.2 to remove the decimal part
+    },
+  },
+]);

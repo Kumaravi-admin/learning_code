@@ -1,0 +1,18 @@
+db = db.getSiblingDB("school");
+
+db.students.deleteOne({
+  name: "Anjesh Kumar", // Delete the document with name "Anjesh Kumar"
+});
+
+db.students.deleteOne({
+  age: 17, // Delete the document with age 17
+});
+db.students.deleteOne({
+  _id: ObjectId("684114511c5b77ca826c4be8"), // Delete the document with the specific ObjectId
+});
+
+db.students.deleteMany({
+  class: "Btech", // Delete all documents with class "Btech"
+});
+
+db.students.deleteMany({}); // Delete all documents in the collection

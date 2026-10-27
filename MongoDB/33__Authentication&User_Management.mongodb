@@ -1,0 +1,166 @@
+// Enable Authentication and User Management
+
+// Open the MongoDB configuration file
+// The path may vary based on your installation, but it is typically found at:
+C:\Program Files\MongoDB\Server\<version>\bin\mongod.cfg
+
+
+// find the security and remove # to uncomment and add the following lines
+// Enable authentication
+security:
+  authorization: enabled  // give 1 or 2 space before the line
+
+
+// Save the configuration file and restart the MongoDB service for changes to take effect
+Restart MongoDb services
+
+1. Press Windo + R Key to open the Run dialog.
+2. Type "services.msc" and press Enter.
+3. Find "MongoDB Server" in the list.
+4. Right-click on it and select "Restart".
+
+
+// Check if MongoDB is running with authentication enabled
+// Open a command prompt and connect to MongoDB using the mongo shell
+// Run any command that requires authentication like
+show collections
+
+// if you get error like "not authorized on admin to execute command { listDatabases: 1 }", it means authentication is enabled correctly.
+MongoServerError[Unauthorized]: not authorized on school to execute command { listCollections: 1, filter: {}, cursor: {}, nameOnly: true, authorizedCollections: false, lsid: { id: UUID("5e666838-b2ba-4627-9a04-82c00c79b34c") }, $db: "school" }
+
+// If you see a list of databases without being prompted, authentication is not enabled correctly.
+
+
+
+// Create an admin user for MongoDB
+// Open a command prompt and connect to MongoDB using the mongo shell
+// swinch to the admin database
+test> use admin
+
+// Create an admin user with a username and password
+// this admin user have all Database access
+db.createUser({
+  user: "admin",
+  pwd: "admin123",
+  roles: [{role: "root",db:"admin"}]
+})
+
+// `Login as Admin User`
+// Check your login or not just run this command : show collections if show list of collection it's mean you are loging
+db.auth("admin","admin123")
+
+
+// Create an Developer user
+// Developer user only ready school database 
+db.createUser({
+  user: "developer",
+  pwd: "dev123",
+  roles: [{role: "read",db:"school"}]
+})
+
+// Login as Developer User
+db.auth("developer","dev123")
+
+// Get All Users Details
+// 1st Login With Admin user that user they have root access
+db.getUsers() // this will retur all users 
+
+// like this
+{
+  users: [
+    {
+      _id: 'admin.admin',
+      userId: UUID('3037dc37-2fad-45d4-a058-e6652246b6ad'),
+      user: 'admin',
+      db: 'admin',
+      roles: [ { role: 'root', db: 'admin' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    },
+    {
+      _id: 'admin.developer',
+      userId: UUID('7a723e17-76bf-4831-bf93-2ba7e0197ab0'),
+      user: 'developer',
+      db: 'admin',
+      roles: [ { role: 'read', db: 'school' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    }
+  ],
+  ok: 1
+}
+
+
+// Get Single User Details
+// This Command only work if you login as Admin
+
+// 
+{
+  _id: 'admin.developer',
+  userId: UUID('7a723e17-76bf-4831-bf93-2ba7e0197ab0'),
+  user: 'developer',
+  db: 'admin',
+  roles: [ { role: 'read', db: 'school' } ],
+  mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+}
+
+
+
+db.students.insertOne({
+      _id: 8,
+      name: 'Maduri Dixit',
+      age: 25,
+      class: 'BCA',
+      email: 'maduri@email.com'
+    })
+
+
+    // update user rolse
+    db.updateUser(
+      "developer",
+      {roles: [{ role: "readWrite", db: "school" }]}
+    )
+
+    // update user password
+db.changeUserPassword(
+  "developer", 
+  "pass123"
+)
+
+// drop single user
+db.dropUser("developer")
+
+
+// drop all users
+db.dropAllUsers()
+
+// grant role to user
+
+db.grantRolesToUser(
+  "developer",
+  [{role: "dbOwner", db: "school"}]
+)
+
+// delele role from user
+
+db.revokeRolesFromUser(
+  "developer",  // user name 
+  [{role: "read", db: "school"}] // roles you want to delete
+)
+
+// Logout from MongoDB
+
+db.logout() // this will logout from current user
+
+exit // exit from mongo shell
+
+
+75 : User Management : Authentication - Get Users
+Get all user details, Get single user details
+
+76 : User Management : Authentication – Update Users
+Update user Details, Update user Password,
+
+77 : User Management : Authentication – Delete Users
+Drop Single user, Drop all users
+
+78 : User Management : Authentication – Grant Roles to Users
+Grant role to user, Revoke role from user

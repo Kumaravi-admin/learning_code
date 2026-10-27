@@ -1,0 +1,109 @@
+db.sales.insertMany([
+  { _id: 1, product: "Mobile", price: 100, quantity: 10, region: "North" },
+  { _id: 2, product: "Laptop", price: 200, quantity: 5, region: "South" },
+  { _id: 3, product: "Mobile", price: 100, quantity: 15, region: "North" },
+  { _id: 4, product: "Tablet", price: 50, quantity: 20, region: "East" },
+  { _id: 5, product: "Desktop", price: 125, quantity: 10, region: "South" },
+  { _id: 6, product: "Laptop", price: 200, quantity: 10, region: "West" },
+]);
+
+// $facet is useful for aggregating data in different ways without running multiple queries
+// It allows you to perform multiple aggregation pipelines in parallel and return the results in a single document
+// Example: Get top 3 products by total sale, total revenue from all sales, and
+// total sales by region in a single query
+db.sales.aggregate([
+  {
+    $facet: {
+      topProducts: [
+        // get top 3 products by total sale
+        {
+          $group: {
+            _id: "$product",
+            totalSale: {
+              $sum: { $multiply: ["$price", "$quantity"] },
+            },
+          },
+        },
+
+        { $sort: { totalSale: -1 } },
+        { $limit: 3 },
+      ],
+      totalRevenue: [
+        // get total revenue from all sales
+        {
+          $group: {
+            _id: null,
+            totalRevenue: {
+              $sum: { $multiply: ["$price", "$quantity"] },
+            },
+          },
+        },
+      ],
+      salesByRegion: [
+        // get total sales by region
+        {
+          $group: {
+            _id: "$region",
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { totalSale: -1 } },
+      ],
+    },
+  },
+]);
+
+// $fill : use to fill missing values in the result set
+// It can fill missing values in a field based on different methods like linear interpolation, last observation carried forward (locf), or a constant value
+// It is useful when you have missing data in your dataset and you want to fill it with
+db.students.insertMany([
+  { _id: 1, name: "Akshay Kumar", class: "Btech", per: 52 },
+  { _id: 2, name: "Salman Khan", class: "BCA", per: 67 },
+  { _id: 3, name: "Deepika Padukone", class: "Btech", per: 83 },
+  { _id: 4, name: "John Abraham", class: "Btech" },
+  { _id: 5, name: "Katrina Kaif", class: "BCA", per: 77 },
+  { _id: 6, name: "Abhishek Bachan", class: "BCA", per: 44 },
+  { _id: 7, name: "Shahid Kapoor", class: "Btech" },
+  { _id: 8, name: "Amir Khan", class: "Btech", per: 38 },
+]);
+
+db.students.aggregate([
+  {
+    $fill: {
+      output: {
+        per: { value: 25 }, // Fill missing 'per' values with 25
+      },
+    },
+  },
+]);
+
+// Fill missing 'per' values with the last observation carried forward (locf)
+// This method fills missing values with the last non-null value encountered in the sequence
+// It is useful when you want to carry forward the last known value in a time series or sequential data
+// For example, if the last known percentage was 52, it will fill the next missing
+db.students.aggregate([
+  {
+    $fill: {
+      output: {
+        per: { method: "locf" }, // Fill missing 'per' values with 25
+      },
+    },
+  },
+]);
+
+// Fill missing 'per' values with linear interpolation
+// This method fills missing values by interpolating between the last known value and the next known value
+// It is useful when you want to fill missing values in a continuous data series // For example, if the last known percentage was 52 and the next known percentage is 83, it will fill the missing value with a linear interpolation between these two values
+// Ensure the documents are sorted by _id before filling
+
+db.students.aggregate([
+  {
+    $fill: {
+      sortBy: { _id: 1 }, // Ensure the documents are sorted by _id before filling
+      partitionBy: "$class", // Fill missing 'per' values within each class
+      output: {
+        per: { method: "linear" }, // Fill missing 'per' values with 25
+      },
+    },
+  },
+]);

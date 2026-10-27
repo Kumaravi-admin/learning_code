@@ -1,0 +1,114 @@
+db = db.getSiblingDB("school");
+
+db.students.insertMany([
+  { _id: 1, name: "Akshay Kumar", age: 23, class: "BCA" },
+  { _id: 2, name: "Salman Khan", age: 24, class: "Btech" },
+  { _id: 3, name: "Shahid Kapoor", age: 20, class: "BSc" },
+  { _id: 4, name: "John Abraham", age: 19, class: "BCA" },
+]);
+
+db.library.insertMany([
+  { _id: 1, book: "Atomic Habits", student_id: 1 },
+  { _id: 2, book: "You Can", student_id: 2 },
+  { _id: 3, book: "Do It Today", student_id: 4 },
+]);
+
+//---------------------------------------------------------
+
+db.customers.insertMany([
+  { _id: 101, name: "Akshay Kumar", city: "Delhi" },
+  { _id: 102, name: "John Abraham", city: "Goa" },
+  { _id: 103, name: "Salman Khan", city: "Mumbai" },
+]);
+
+db.orders.insertMany([
+  { _id: 1, customer_id: 101, product: "Laptop", price: 35000 },
+  { _id: 2, customer_id: 102, product: "Phone", price: 20000 },
+  { _id: 3, customer_id: 101, product: "Phone ABC", price: 22000 },
+  { _id: 4, customer_id: 103, product: "Tablet", price: 15000 },
+  { _id: 5, customer_id: 102, product: "Tablet", price: 15000 },
+]);
+
+// $lookup (Join)
+
+// (Join) Example 1 $lookup
+
+// Join Students Collection to Library Collection throw Library Collection student_id Field to Students Collection _id Field
+db.library.aggregate([
+  {
+    $lookup: {
+      from: "students", // Collection to join with Library Collection
+      localField: "student_id", // Field from Library Collection
+      foreignField: "_id", // Field from Students Collection
+      as: "Student", // Name of the new array field to add to Library Collection
+    },
+  },
+]);
+
+// (Join) Example 2 $lookup
+// Join Students Collection to Library Collection throw Students Collection  _id Field to Library Collection Student_id Filed
+db.students.aggregate([
+  {
+    $lookup: {
+      from: "library", // Collection to join with Students Collection
+      localField: "_id", // Field from Students Collection
+      foreignField: "student_id", // Field from Library Collection
+      as: "Book", // Name of the new array field to add to Students Collection
+    },
+  },
+]);
+
+// (Join) Example 3 $lookup + $unwind
+// Join Student Collection to Library collection and use $unwind for if Book Array have only one document then remove Arrya
+
+db.students.aggregate([
+  {
+    $lookup: {
+      from: "library", // Collection to join with Students Collection
+      localField: "_id", // Field from Students Collection
+      foreignField: "student_id", // Field from Library Collection
+      as: "Book", // Name of the new array field to add to Students Collection
+    },
+  },
+  { $unwind: "$Book" }, // Unwind Book Array to remove array and make it a single document
+]);
+
+// (Join) Example 4 $lookup
+// Join Customer Collection to Oder Collection throw Customer _id to order customer_id filed
+db.customers.aggregate([
+  {
+    $lookup: {
+      from: "orders", // Collection to join with Customers Collection
+      localField: "_id", // Field from Customers Collection
+      foreignField: "customer_id", // Field from Orders Collection
+      as: "Orders", // Name of the new array field to add to Customers Collection
+    },
+  },
+]);
+
+// (Join) Example 5 $lookup
+// Join and marge Collecton document
+
+// Join Library Collection to Students Collection throw Library Collection student_id Field to Students Collection _id Field
+// and replace the root document with the merged object
+// This will merge the Student document into the Library document, removing the Student array
+db.library.aggregate([
+  {
+    $lookup: {
+      from: "students", // Collection to join with Library Collection
+      localField: "student_id", // Field from Library Collection
+      foreignField: "_id", // Field from Students Collection
+      as: "Student", // Name of the new array field to add to Library Collection
+    },
+  },
+  {
+    $replaceRoot: {
+      // Replace the root document with a new object
+      newRoot: {
+        $mergeObjects: [{ $arrayElemAt: ["$Student", 0] }, "$$ROOT"],
+        // Merge the first element of the Student array with the current document
+      },
+    },
+  },
+  { $project: { Student: 0 } }, // Exclude the Student array from the final output
+]);

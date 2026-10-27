@@ -1,0 +1,421 @@
+db.students.insertMany([
+  { _id: 1, name: "Akshay Kumar", hobbies: ["music", "travel", "painting"] },
+  {
+    _id: 2,
+    name: "Salman Khan",
+    hobbies: ["music", "travel", "books", "football"],
+  },
+]);
+
+db.students2.insertMany([
+  { _id: 1, name: "Akshay Kumar", marks: [55, 62, 52, 81] },
+  { _id: 2, name: "Salman Khan", marks: [68, 88, 54, 51] },
+]);
+
+db.students3.insertMany([
+  {
+    _id: 1,
+    name: "Akshay Kumar",
+    subjects: ["Math", "Science"],
+    extraSubjects: ["History", "Geography"],
+  },
+  {
+    _id: 2,
+    name: "Salman Khan",
+    subjects: ["Math", "Science"],
+    extraSubjects: ["Music", "Civics"],
+  },
+]);
+
+db.students4.insertMany([
+  {
+    _id: 1,
+    name: "Akshay Kumar",
+    subjects: ["Math", "Science", "History"],
+    marks: [85, 77, 82],
+  },
+  {
+    _id: 2,
+    name: "Salman Khan",
+    subjects: ["Math", "Science", "Music"],
+    marks: [88, 81, 95],
+  },
+]);
+
+db.students5.insertMany([
+  {
+    _id: 1,
+    name: "Akshay Kumar",
+    subjects: [
+      ["Math", 85],
+      ["Science", 77],
+      ["History", 82],
+    ],
+  },
+  {
+    _id: 2,
+    name: "Salman Khan",
+    subjects: [
+      ["Math", 88],
+      ["Science", 81],
+      ["Music", 95],
+    ],
+  },
+]);
+
+db.students6.insertMany([
+  { _id: 1, studentInfo: { name: "Akshay Kumar", age: 25 } },
+  { _id: 2, studentInfo: { name: "Salman Khan", age: 26 } },
+]);
+
+// $arrayElemAt operator
+// This operator is used to access an element at a specific index in an array.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      selectedHobby: {
+        $arrayElemAt: ["$hobbies", 2], // Retrieves the hobby at index 2
+      },
+    },
+  },
+]);
+
+// $firstN operator
+// This operator retrieves the first N elements from an array. example: if pass n as 2 then it will return first 2 elements of the array.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      topdHobby: {
+        $firstN: { input: "$hobbies", n: 2 }, // Retrieves the first 2 hobbies
+      },
+    },
+  },
+]);
+
+// $lastN operator
+// This operator retrieves the last N elements from an array. example: if pass n as 2 then it will return last 2 elements of the array.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      lastHobby: {
+        $lastN: { input: "$hobbies", n: 2 }, // Retrieves the last 2 hobbies
+      },
+    },
+  },
+]);
+
+// $maxN operator
+// This operator retrieves the N largest elements from an array. example: if pass n as 2 then it will return top 2 elements of the array.
+db.students2.aggregate([
+  {
+    $project: {
+      name: 1,
+      topMarks: {
+        $maxN: { input: "$marks", n: 2 }, // Retrieves the top 2 marks
+      },
+    },
+  },
+]);
+
+//  $minN operator
+// This operator retrieves the N smallest elements from an array. example: if pass n as 2 then it will return bottom 2 elements of the array.
+db.students2.aggregate([
+  {
+    $project: {
+      name: 1,
+      topMarks: {
+        $minN: { input: "$marks", n: 2 }, // Retrieves the bottom 2 marks
+      },
+    },
+  },
+]);
+
+// $slice operator
+// This operator is used to retrieve a subset of an array. It can be used to get a specific number of elements from the start or end of the array.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      selectedHobby: {
+        $slice: ["$hobbies", 1, 2], // Retrieves 2 hobbies starting from index 1
+      },
+    },
+  },
+]);
+
+// $slice operator with negative index
+// This allows you to retrieve elements from the end of the array.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      selectedHobby: {
+        $slice: ["$hobbies", -2, 1], // Retrieves 2 hobbies starting from the last element},
+      },
+    },
+  },
+]);
+
+// $sortArray operator
+// This operator sorts the elements of an array based on a specified order.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      shortedHobbies: {
+        $sortArray: { input: "$hobbies", sortBy: 1 }, // Sorts hobbies in ascending order, for descending order use -1
+      },
+    },
+  },
+]);
+// Sorting an array of numbers
+// This operator sorts the elements of an array based on a specified order.
+
+db.students2.aggregate([
+  {
+    $project: {
+      name: 1,
+      shortedHobbies: {
+        $sortArray: { input: "$marks", sortBy: 1 }, // Sorts marks in ascending order, for descending order use -1
+      },
+    },
+  },
+]);
+
+// $reverseArray operator
+// This operator reverses the order of elements in an array.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      reversedHobbies: {
+        $reverseArray: "$hobbies", // Reverses the order of hobbies
+      },
+    },
+  },
+]);
+
+// $size operator
+// This operator returns the number of elements in an array.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      HobbiesCount: {
+        $size: "$hobbies", // Returns the count of hobbies in the array
+      },
+    },
+  },
+]);
+
+// $in operator
+// This operator checks if a specified value exists in an array and returns true or false.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      check: {
+        $in: ["football", "$hobbies"], // Checks if "football" is in the hobbies array
+      },
+    },
+  },
+]);
+
+// $indexOfArray operator
+// This operator returns the index of the first occurrence of a specified value in an array. If the value is not found, it returns -1.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      index: {
+        $indexOfArray: ["$hobbies", "football"], // Returns the index of "football" in the hobbies array
+      },
+    },
+  },
+]);
+
+// $indexOfArray operator withr range
+// This operator allows you to specify a starting index and a maximum number of elements to search.
+// Returns the index of "football" in the hobbies array, starting from index 1 and searching up to index 4
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      index: {
+        $indexOfArray: ["$hobbies", "football", 1, 4], // Searches for "football" starting from index 1 and up to 4 elements
+      },
+    },
+  },
+]);
+
+// $isArray operator
+// This operator checks if a specified field is an array and returns true or false.
+db.students.aggregate([
+  {
+    $project: { isArray: { $isArray: "$hobbies" } }, // Checks if "hobbies" is an array
+  },
+]);
+
+// $map operator
+// This operator applies a specified expression to each element in an array and returns a new array with the results.
+// Example: Convert all hobbies to uppercase
+db.students.aggregate([
+  {
+    $project: {
+      upperCaseHobbies: {
+        $map: {
+          input: "$hobbies", // Input array of hobbies
+          as: "hobbies", // Variable name for each element in the input array
+          in: { $toUpper: "$$hobbies" }, // Converts each hobby to uppercase
+        },
+      },
+    },
+  },
+]);
+
+// $map operator with addition
+// This operator applies a specified expression to each element in an array and returns a new array with the results.
+// Example: Add 2 to each mark in the marks array
+db.students2.aggregate([
+  {
+    $project: {
+      newMarks: {
+        $map: {
+          input: "$marks",
+          as: "marks",
+          in: { $add: ["$$marks", 2] }, // Adds 2 to each mark in the marks array
+        },
+      },
+    },
+  },
+]);
+
+// $filter operator
+// This operator filters the elements of an array based on a specified condition and returns a new array with the elements that match the condition.
+db.students2.aggregate([
+  {
+    $project: {
+      AboveMarks: {
+        $filter: {
+          input: "$marks",
+          as: "marks",
+          cond: { $gte: ["$$marks", 60] }, // Filters marks greater than or equal to 60
+          limit: 1, // Optional: limits the number of elements in the result
+        },
+      },
+    },
+  },
+]);
+
+// $reduce operator
+// This operator applies an expression to each element in an array, accumulating a single result.
+// Example: Calculate the total marks by summing up all elements in the marks array
+db.students2.aggregate([
+  {
+    $project: {
+      TotalMarks: {
+        $reduce: {
+          input: "$marks",
+          initialValue: 0,
+          in: { $add: ["$$value", "$$this"] }, // Sums up all marks in the marks array
+        },
+      },
+    },
+  },
+]);
+
+// $reduce operator with string concatenation
+// This operator applies an expression to each element in an array, accumulating a single result.
+// Example: Concatenate all hobbies into a single string
+db.students.aggregate([
+  {
+    $project: {
+      CombinedHobbies: {
+        $reduce: {
+          input: "$hobbies",
+          initialValue: "",
+          in: { $concat: ["$$value", "$$this"] }, // Concatenates all hobbies into a single string
+        },
+      },
+    },
+  },
+]);
+
+//` $range operator
+// This operator generates an array of numbers within a specified range.
+db.students.aggregate([
+  {
+    $project: {
+      numbers: {
+        $range: [1, 6, 2], // Generates an array of numbers from 1 to 6 with a step of 2
+      },
+    },
+  },
+]);
+
+// $range operator with negative step
+// This operator generates an array of numbers within a specified range, allowing for negative steps.
+db.students.aggregate([
+  {
+    $project: {
+      numbers: {
+        $range: [10, 0, -2], // Generates an array of numbers from 10 to 0 with a step of -2
+      },
+    },
+  },
+]);
+
+// $concatArrays operator
+// This operator concatenates two or more arrays into a single array.
+db.students3.aggregate([
+  {
+    $project: {
+      name: 1,
+      allSubjects: {
+        $concatArrays: ["$subjects", "$extraSubjects"], // Combines subjects and extraSubjects into a single array
+      },
+    },
+  },
+]);
+
+// $zip operator
+// This operator combines multiple arrays into an array of arrays, where each inner array contains elements from the input arrays at the same index.
+db.students4.aggregate([
+  {
+    $project: {
+      name: 1,
+      data: {
+        $zip: { inputs: ["$subjects", "$marks"] }, // Combines subjects and marks into an array of arrays
+      },
+    },
+  },
+]);
+
+// $arrayToObject operator
+// This operator converts an array of key-value pairs into an object.
+db.students5.aggregate([
+  {
+    $project: {
+      name: 1,
+      SubjectInfo: {
+        $arrayToObject: "$subjects",
+      },
+    },
+  },
+]);
+
+// $objectToArray operator
+// This operator converts an object into an array of key-value pairs.
+db.students6.aggregate([
+  {
+    $project: {
+      name: 1,
+      SubjectInfo: {
+        $objectToArray: "$studentInfo", // Converts the studentInfo object into an array of key-value pairs
+      },
+    },
+  },
+]);

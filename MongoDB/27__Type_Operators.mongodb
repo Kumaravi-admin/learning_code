@@ -1,0 +1,168 @@
+db.students.insertMany([
+  {
+    _id: 1,
+    name: "Akshay Kumar",
+    age: "22",
+    marks: 82,
+    pass: true,
+    dob: ISODate("2002-03-27T16:58:51.538Z"),
+  },
+  {
+    _id: 2,
+    name: "Salman Khan",
+    age: "23",
+    marks: 33.58,
+    pass: false,
+    dob: ISODate("2001-05-15T18:15:35.264Z"),
+  },
+]);
+
+// $toString operator
+// converts a value to a string. It can be used in aggregation pipelines to transform data types Example: Convert the 'name' field to a string
+db.students.aggregate([
+  {
+    $project: {
+      StringValue: {
+        $toString: "$name", // Convert 'name' to string
+      },
+    },
+  },
+]);
+
+// $toInt operator
+// converts a value to an integer. It can be used in aggregation pipelines to transform data types Example: Convert the 'age' field to an integer
+db.students.aggregate([
+  {
+    $project: {
+      IntValue: {
+        $toInt: "$age", // Convert 'age' to integer
+      },
+    },
+  },
+]);
+
+//toInt operator with decimal values
+// converts a decimal value to an integer. It can be used in aggregation pipelines to transform data types Example: Convert the 'marks' field to an integer
+db.students.aggregate([
+  {
+    $project: {
+      IntValue: {
+        $toInt: "$marks", // Convert 'marks' to integer
+      },
+    },
+  },
+]);
+
+// $toInt operator with boolean values
+// converts a boolean value to an integer. It can be used in aggregation pipelines to transform data types Example: Convert the 'pass' field to an integer
+db.students.aggregate([
+  {
+    $project: {
+      IntValue: {
+        $toInt: "$pass", // Convert 'pass' to integer (true -> 1, false -> 0)
+      },
+    },
+  },
+]);
+
+// $toLong operator
+// converts a value to a long integer. It can be used in aggregation pipelines to transform data types Example: Convert the 'marks' field to a long integer
+
+db.students.aggregate([
+  {
+    $project: {
+      IntValue: {
+        $toLong: "$marks", // Convert 'marks' to long integer
+      },
+    },
+  },
+]);
+
+// $toDouble operator
+// converts a value to a double. It can be used in aggregation pipelines to transform data types Example: Convert the 'marks' field to a double
+db.students.aggregate([
+  {
+    $project: {
+      doubleValue: {
+        $toDouble: "$marks", // Convert 'marks' to double
+      },
+    },
+  },
+]);
+
+// $toDecimal operator
+// converts a value to a decimal. It can be used in aggregation pipelines to transform data types Example: Convert the 'marks' field to a decimal
+db.students.aggregate([
+  {
+    $project: {
+      decimalValue: {
+        $toDecimal: "$marks", // Convert 'marks' to decimal
+      },
+    },
+  },
+]);
+
+// $toBool operator
+// converts a value to a boolean. It can be used in aggregation pipelines to transform data types Example: Convert the 'pass' field to boolean
+db.students.aggregate([
+  {
+    $project: {
+      boolValue: {
+        $toBool: "$pass", // Convert 'pass' to boolean
+      },
+    },
+  },
+]);
+
+// $toObjectId operator
+// converts a value to an ObjectId. It can be used in aggregation pipelines to transform data types Example: Convert a string to ObjectId
+// Note: Ensure the string is a valid ObjectId format before conversion
+db.students.aggregate([
+  {
+    $project: {
+      ObjectId: {
+        $toObjectId: "6889bd7e7a007f86246c4bd0", // Convert string to ObjectId
+      },
+    },
+  },
+]);
+
+// $convert operator
+// provides more flexibility in type conversion. It allows specifying the input, target type, and options
+db.students.aggregate([
+  {
+    $project: {
+      ConvertedValue: {
+        $convert: {
+          input: "$age", // Input value to convert
+          to: "int", // Target type
+        },
+      },
+    },
+  },
+]);
+
+// $type operator
+// returns the BSON data type of a field. It can be used in aggregation pipelines to identify the type of a field
+db.students.aggregate([
+  {
+    $project: {
+      fildType: {
+        $type: "$name", // Get the type of 'name' field
+      },
+    },
+  },
+]);
+
+// $isNumber operator
+// checks if a value is a number. It can be used in aggregation pipelines to filter or project numeric values
+// Example: Check if the 'dob' field is a number (it should return false since
+db.students.aggregate([
+  {
+    $project: {
+      isNumber: {
+        $isNumber: "$dob", // Check if 'dob' is a number
+      },
+    },
+  },
+]);

@@ -1,0 +1,74 @@
+db.students.insertMany([
+  { _id: 1, name: "Akshay Kumar", age: 23, class: "BCA" },
+  { _id: 2, name: "Salman Khan", age: 24, class: "Btech" },
+  { _id: 3, name: "Shahid Kapoor", age: 20, class: "BSc" },
+  { _id: 4, name: "John Abraham", age: 19, class: "BCA" },
+  { _id: 5, name: "Amir Khan", age: 24, class: "Btech" },
+  { _id: 6, name: "Salman Khan", age: 21, class: "BSc" },
+  { _id: 7, name: "Suniel Shetty", age: 22, class: "BCA" },
+  { _id: 8, name: "Kartik Aryan", age: 20, class: "Btech" },
+]);
+
+db.personal.insertMany([
+  { _id: 1, city: "Delhi", phone: 3030320 },
+  { _id: 2, city: "Gao", phone: 445522 },
+  { _id: 3, city: "Mumbai", phone: 223347 },
+  { _id: 4, city: "Delhi", phone: 303085 },
+  { _id: 5, city: "Agra", phone: 221135 },
+  { _id: 6, city: "Delhi", phone: 648877 },
+  { _id: 7, city: "Goa", phone: 309988 },
+  { _id: 8, city: "Mumbai", phone: 223355 },
+]);
+
+// Example : 1 $out
+// This example filters students older than 20 and outputs them to a new collection called "valid_students".
+db.students.aggregate([
+  { $match: { age: { $gt: 20 } } }, // filter students older than 20
+  { $out: "valid_students" }, // output to a new collection
+]);
+
+// Example 2 $out
+// This example outputs all students to a new collection called "valid_students".
+db.students.aggregate([{ $out: "valid_students" }]); // output all students to a new collection
+
+// Example 3 $out
+// This example groups students by class and outputs the result to a new collection called "class_data".
+db.students.aggregate([
+  { $group: { _id: "$class", Student: { $push: "$name" } } }, // group by class
+  { $out: "class_data" }, // output to a new collection
+]);
+
+// Example 1 #merge
+// This example merges students older than 20 into the "students" collection.
+db.personal.aggregate([
+  {
+    $merge: {
+      into: "students", // target collection
+      on: "_id", // field to match on
+      whenMatched: "merge", // options for matched documents ("merge", "replace", "keepExisting")
+      whenNotMatched: "insert", // other options for unmatched documents ("insert", "discard")
+    },
+  },
+]);
+
+// $unionWith
+// This example creates two collections: students1 and students2, and then uses $unionWith to combine them.
+db.students1.insertMany([
+  { _id: 1, name: "Kartik Aryan", role: "Student" },
+  { _id: 2, name: "RajKumar Rao", role: "Student" },
+]);
+
+db.students2.insertMany([
+  { _id: 1, name: "Salman Khan", role: "Alumnus" },
+  { _id: 2, name: "Akshay Kumar", role: "Alumnus" },
+]);
+
+//
+// This example combines documents from two collections: students1 and students2.
+db.students1.aggregate([
+  {
+    $unionWith: {
+      coll: "students2", // collection to union with
+    },
+  },
+]);

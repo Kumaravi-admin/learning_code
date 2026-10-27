@@ -1,0 +1,26 @@
+// Setup MongoDB Command Line Database Tools
+
+// 1. Visit and download the MongoDB Command Line Database Tools from the official MongoDB website.
+// https://www.mongodb.com/try/download/database-tools
+
+// 2. Install the downloaded tools by just simpling click on Next and Next.
+
+// 3. After installation, set the environment variable for the MongoDB Database Tools.
+// search for "Environment Variables" in the Windows search bar.
+// Click on "Edit the system environment variables".
+// In the System Properties window, click on the "Environment Variables" button.
+// In the Environment Variables window, under "System variables",  dubble click on "Path" Variable.
+// In the Edit Environment Variable window, click on "New" and add the path to the MongoDB Database Tools installation directory.
+// The default installation path is usually "C:\Program Files\MongoDB\Tools\100\bin".
+// Click OK to close all windows.
+
+
+
+// 4. Open a new Command Prompt and execute the following command to  insert data from a JSON file into a MongoDB database.
+// Make sure to replace "D:/test.json" with the actual path to your JSON
+// file, "school" with your database name, and "testing" with your collection name.
+
+mongoimport "D:/test.json" -d school -c testing --jsonArray
+
+// 5. After running the command, you can verify that the data has been imported successfully by connecting to the MongoDB shell and querying the collection.
+db.testing.find()

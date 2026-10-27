@@ -1,0 +1,151 @@
+db.students.insertMany([
+  {
+    _id: 1,
+    name: "Akshay Kumar",
+    age: 23,
+    class: "BCA",
+    email: "akshay@email.com",
+  },
+  {
+    _id: 2,
+    name: "Salman Khan",
+    age: 24,
+    class: "Btech",
+    email: "salman@email.com",
+  },
+  {
+    _id: 3,
+    name: "Shahid Kapoor",
+    age: 20,
+    class: "BSc",
+    email: "shahid@email.com",
+  },
+  {
+    _id: 4,
+    name: "John Abraham",
+    age: 19,
+    class: "BCA",
+    email: "john@email.com",
+  },
+  {
+    _id: 5,
+    name: "Amir Khan",
+    age: 24,
+    class: "Btech",
+    email: "amir@email.com",
+  },
+  {
+    _id: 6,
+    name: "Suniel Shetty",
+    age: 22,
+    class: "BCA",
+    email: "suniel@email.com",
+  },
+  {
+    _id: 7,
+    name: "Kartik Aryan",
+    age: 20,
+    class: "Btech",
+    email: "kartik@email.com",
+  },
+]);
+
+// Explain
+// This code snippet demonstrates how to create, view, and drop indexes in a MongoDB collection named "students". It also shows how to run queries with explanations of their execution stats. there are examples of creating single field indexes, compound indexes, unique indexes, text indexes, and wildcard indexes. The code includes commands to insert documents into the collection and perform queries with explanations to analyze their performance. there are INDEXES in MongoDB, which are used to improve the performance of queries by allowing the database to quickly locate and access the data without scanning the entire collection.
+// IXSCAN, COLLSCAN, FETCH and other terms refer to different types of index scans and query execution strategies in MongoDB.
+// 1. Create an index
+db.students.createIndex({ email: 1 });
+
+// 2. View indexes
+db.students.getIndexes();
+
+// 3. Run and explain a query
+db.students.find({ email: "kartik@email.com" }).explain("executionStats");
+
+// 4. Drop the index
+db.students.dropIndex("email_1");
+
+// --------------------------------------------------------------------------
+
+// Create Indexes : Single filed Indexe
+
+// This code creates an index on the "name" field of the "students" collection,
+db.students.createIndex({
+  name: 1, // 1 for ascending order, -1 for descending order
+});
+
+// Show Indexes
+db.students.getIndexes();
+
+// Run and Explain Query
+db.students.find({ name: "Amir Khan" }).explain("executionStats");
+
+// Drop Indexes
+db.students.dropIndex("name_1");
+
+// Compound Indexes-------------------------------------------------
+// This code creates a compound index on the "class" and "age" fields of the "students" collection.
+db.students.createIndex({
+  class: 1, // 1 for ascending order, -1 for descending order
+  age: -1, // -1 for descending order
+});
+db.students.getIndexes(); // Show Indexes
+db.students.find({ class: "BCA" }); // View documents where class is "BCA"
+db.students.find({ class: "BCA" }).sort({ age: -1 }).explain("executionStats"); // Explain the query execution stats
+
+// Unique Indexe-------------------------------------------------------
+// This code creates a unique index on the "email" field of the "students" collection, ensuring that no two documents can have the same email address.
+// If you try to insert a document with an email that already exists, it will throw an
+
+// Create Unique Index
+db.students.createIndex(
+  {
+    email: 1, // 1 for ascending order, -1 for descending order
+  },
+  {
+    unique: true, // Ensure uniqueness
+  }
+);
+// Show Indexes
+db.students.getIndexes();
+// Show documents with a specific email
+db.students.find({ email: "suniel@email.com" });
+// Explain the query execution stats
+db.students.find({ email: "suniel@email.com" }).explain("executionStats");
+
+// If you try to insert a document with an email that already exists, it will throw an error
+db.students.insertOne({
+  _id: 8,
+  name: "Katrina Kaif",
+  age: 21,
+  class: "BCA",
+  email: "kartik@email.com",
+});
+
+// Text Indexe--------------------------------------------------------
+// This code creates a text index on the "name" field of the "students" collection, allowing for text search capabilities.
+// It then performs a text search for the term "Khan" in the "name"
+
+// Create Text Index
+db.students.createIndex({ name: "text" });
+// Show Indexes
+db.students.getIndexes();
+// Perform Text Search
+db.students.find({ $text: { $search: "Khan" } });
+// Explain the query execution stats
+db.students.find({ $text: { $search: "Khan" } }).explain("executionStats");
+
+// Wildcard Index-------------------------------------------------
+// This code creates a wildcard index on all fields in the "students" collection, allowing for
+
+// Create Wildcard Index
+db.students.createIndex({ "$**": 1 });
+
+// Show Indexes
+db.students.getIndexes();
+
+// Find documents with a specific email
+db.students.find({ email: "suniel@email.com" });
+
+// Explain the query execution stats
+db.students.find({ email: "suniel@email.com" }).explain("executionStats");

@@ -1,0 +1,112 @@
+db = db.getSiblingDB("school");
+
+db.students.insertMany([
+  { _id: 1, name: "Akshay Kumar", age: 23, class: "BCA" },
+  { _id: 2, name: "Salman Khan", age: 24, class: "Btech" },
+  { _id: 3, name: "Shahid Kapoor", age: 20, class: "BSc" },
+  { _id: 4, name: "John Abraham", age: 19, class: "BCA" },
+  { _id: 5, name: "Amir Khan", age: 24, class: "Btech" },
+  { _id: 6, name: "Salman Khan", age: 21, class: "BSc" },
+  { _id: 7, name: "Suniel Shetty", age: 22, class: "BCA" },
+  { _id: 8, name: "Kartik Aryan", age: 20, class: "Btech" },
+]);
+
+// ::::: Aggregation Pipeline Operators
+
+// $match :: // Filter the documents based on the condition
+
+// Match all students in BCA class
+db.students.aggregate([{ $match: { class: "BCA" } }]);
+
+// Match all students with age greater than 20
+db.students.aggregate([{ $match: { age: { $gt: 20 } } }]);
+
+// Match all students with age greater than 20 and class BCA
+db.students.aggregate([
+  {
+    $match: {
+      $and: [{ age: { $gt: 20 } }, { class: "BCA" }],
+    }, // Using $and operator
+  },
+]);
+
+// $count ::
+// Count the number of documents that match the condition,
+db.students.aggregate([{ $match: { age: { $gt: 20 } } }, { $count: "name" }]);
+
+// $sort
+
+// Sort the documents based on the field in ascending or descending order
+db.students.aggregate([
+  { $match: { age: { $gt: 20 } } },
+  { $sort: { age: 1 } }, // 1 for ascending order
+]);
+
+// Sort the documents based on the field in descending order
+db.students.aggregate([
+  { $match: { age: { $gt: 20 } } },
+  { $sort: { age: -1 } }, // -1 for descending order
+]);
+
+// Sort the documents based on multiple fields, First by name in ascending order, then by age in ascending order
+db.students.aggregate([
+  { $match: { age: { $gt: 20 } } }, // Match students with age greater than 20
+  { $sort: { name: 1, age: 1 } }, // Sort by name and then by age
+]);
+
+// $sortBycount
+// Count the number of documents for each unique value of a field returning the field and the count
+db.students.aggregate([{ $sortByCount: "$class" }]);
+
+// $project
+// Reshape the documents by including, excluding, or adding new fields
+db.students.aggregate([
+  { $match: { age: { $gt: 20 } } },
+  { $sort: { name: 1, age: 1 } },
+  { $project: { name: 1, class: 1, _id: 0 } }, // Project only name and class fields, excluding _id
+]);
+
+// Reshape the documents by including, excluding, or adding new fields
+db.students.aggregate([
+  { $sort: { name: 1, age: 1 } },
+  {
+    $project: {
+      name: 1,
+      class: 1,
+      _id: 0,
+      isValidAge: { $gt: ["$age", 20] }, //
+    }, // Add a new field isValidAge that checks if age is greater than 20
+  },
+]);
+
+// $limit
+db.students.aggregate([
+  { $match: { age: { $gt: 20 } } },
+  { $sort: { name: 1, age: 1 } },
+  { $project: { name: 1, class: 1, _id: 0 } },
+  { $limit: 2 },
+]);
+
+// $skip
+// Skip a specified number of documents in the result set limiting the result set
+db.students.aggregate([
+  { $match: { age: { $gt: 20 } } },
+  { $sort: { name: 1, age: 1 } },
+  { $project: { name: 1, class: 1, _id: 0 } },
+  { $skip: 4 }, // Skip the first 4 documents
+  { $limit: 2 }, // Skip the first 4 documents and limit the result to 2 documents
+]);
+
+// $sample
+// Randomly select a specified number of documents from the collection
+db.students.aggregate([
+  { $sample: { size: 2 } }, // Randomly select 2 documents
+]);
+//
+//
+//
+//
+//
+//
+//
+//

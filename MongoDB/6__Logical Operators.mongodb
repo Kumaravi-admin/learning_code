@@ -1,0 +1,42 @@
+db = db.getSiblingDB("school");
+
+db.students.insertMany([
+  { name: "Anjesh Kumar", age: 22, class: "Mtech", city: "Delhi" },
+  { name: "Ashito Kumar", age: 22, class: "Btech", city: "Mumbai" },
+  { name: "Aniket Kumar", age: 20, class: "Btech", city: "Delhi" },
+  { name: "Zubair Ahmad", age: 18, class: "Mtech", city: "Kolkata" },
+  { name: "Rajvir Kumar", age: 11, class: "Btech", city: "Bihar" },
+]);
+
+// $and operator :: Returns documents where all conditions matches
+
+db.students.find({
+  $and: [{ age: { $gt: 20 } }, { age: { $lt: 23 } }],
+}); // Find students with age greater than 20 and less than 23
+
+db.students.find({
+  $and: [{ age: { $gt: 20 } }, { city: { $eq: "Delhi" } }],
+}); // Find students with age greater than 20 and city equal to Delhi
+
+// $or operator :: Returns documents where all or any single condition matches
+
+db.students.find({
+  $or: [{ age: { $gt: 20 } }, { city: { $eq: "Delhi" } }],
+}); // Find students with age greater than 20 or city equal to Delhi
+//
+
+// $nor operator :: Returns docuements where both conditions fails or not matches
+
+db.students.find({
+  $nor: [{ age: { $gt: 20 } }, { city: { $eq: "Delhi" } }],
+}); // Find students where age is not greater than 20 and city is not equal to Delhi
+
+// $not operator :: Returns documents where the condition does not match
+db.students.find({
+  age: { $not: { $gt: 20 } },
+}); // Find students where age is not greater than 20
+
+// $and operator with deleteMany
+db.students.deleteMany({
+  $and: [{ age: { $gt: 20 } }, { city: { $eq: "Delhi" } }],
+}); // Delete students with age greater than 20 and city equal to Delhi

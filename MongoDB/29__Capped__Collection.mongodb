@@ -1,0 +1,45 @@
+// capped collection
+// This collection will store log entries with a maximum size of 50KB and a maximum of 5 documents.
+// The oldest entries will be removed when the size limit is reached.
+
+
+// Create a capped collection named "log" with a size limit of 50KB and a maximum of 5 documents
+db.createCollection("log", {
+  capped: true,
+  size: 51200,
+  max: 5,
+});
+
+// Insert some log entries into the capped collection
+db.log.insertMany([
+  { message: "Log entry 1" },
+  { message: "Log entry 2" },
+  { message: "Log entry 3" },
+  { message: "Log entry 4" },
+  { message: "Log entry 5" },
+]);
+
+// Insert a new log entry to trigger the capped collection behavior
+// This will remove the oldest entry (Log entry 1) to make space for the new entry
+db.log.insertOne({ message: "Log entry 6" });
+
+// Verify the contents of the capped collection
+db.log.find();
+
+// To see the most recent log entries, we can sort by natural order
+db.log.find().sort({ $natural: -1 });
+
+db.log.isCapped(); // Check if the collection is capped
+
+// Convert an existing collection to a capped collection
+// Note: This command will fail if the collection already contains documents or if it is not empty
+// Note: max opption is not supported in convertToCapped
+db.runCommand({ convertToCapped: "students", size: 51200 }); // Convert an existing collection to a capped collection
+
+// Modify the capped collection to change the maximum number of documents
+// Note: This command will not change the size of the capped collection, only the max number
+db.runCommand({ collMod: "log", cappedMax: 7 });
+
+// Modify the capped collection to change the size limit
+// Note: This command will not change the maximum number of documents, only the size limit
+db.runCommand({ collMod: "log", cappedSize: 7 });

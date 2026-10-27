@@ -1,0 +1,206 @@
+db.students.insertMany([
+  { _id: 1, name: "Akshay Kumar", dob: ISODate("2008-01-15T08:15:39.736Z") },
+  { _id: 2, name: "Salman Khan", dob: ISODate("2009-08-01T08:15:39.736Z") },
+]);
+
+// $year, $month, $week Oprators
+// these operators extract the year, month, and week from a date field.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      Year: { $year: "$dob" },
+      Month: { $month: "$dob" },
+      Week: { $week: "$dob" },
+    },
+  },
+]);
+
+// $dayOfMonth, $dayOfWeek, $dayOfYear Oprators
+// these operators extract the day of the month, day of the week, and day of the year from a date field.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      day: { $dayOfMonth: "$dob" },
+      dayofweek: { $dayOfWeek: "$dob" },
+      dayofyear: { $dayOfYear: "$dob" },
+    },
+  },
+]);
+
+// $hour, $minute, $second, $millisecond Oprators
+// these operators extract the hour, minute, second, and millisecond from a date field.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      Hour: { $hour: "$dob" },
+      Minutes: { $minute: "$dob" },
+      Second: { $second: "$dob" },
+      MilliSecond: { $millisecond: "$dob" },
+    },
+  },
+]);
+
+// $dateAdd Oprators
+// This operator add days, months, years, etc. to a date field.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      newDate: {
+        $dateAdd: {
+          startDate: "$dob",
+          unit: "day", // year,quarter,week,month,day,hour,minite,second,millisecond
+          amount: 5,
+        },
+      },
+    },
+  },
+]);
+
+// $dateSubtract Oprators
+// This operator subtracts days, months, years, etc. from a date field.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      newDate: {
+        $dateSubtract: {
+          startDate: "$dob",
+          unit: "month", // year,quarter,week,month,day,hour,minite,second,millisecond
+          amount: 1,
+        },
+      },
+    },
+  },
+]);
+
+// $dateDiff Oprators
+// this operator calculates the difference between two dates in a specified unit.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      difference: {
+        $dateDiff: {
+          startDate: "$dob",
+          endDate: ISODate("2025-12-31T00:00:00Z"),
+          unit: "year", // year,quarter,week,month,day,hour,minite,second,millisecond
+        },
+      },
+    },
+  },
+]);
+
+// $dateFromParts Oprators
+// this operator constructs a date from individual components such as year, month, day, hour, minute, second, millisecond, and timezone.
+// It can be used to create a date from separate fields or to manipulate date components.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      ConstructeDate: {
+        $dateFromParts: {
+          year: 2025,
+          month: 1,
+          day: 7,
+          hour: 15,
+          minute: 45,
+          second: 40,
+          millisecond: 150,
+          timezone: "Europe/London", //UTC
+        },
+      },
+    },
+  },
+]);
+
+// $dateToParts Oprators
+// this operator breaks down a date into its individual components such as year, month, day, hour, minute, second, millisecond, and timezone.
+
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      ConstructeDate: {
+        $dateToParts: {
+          date: "$dob",
+          timezone: "Europe/London", // UTC
+        },
+      },
+    },
+  },
+]);
+
+// $dateTrunc Oprators
+// this operator truncates a date to a specified unit, such as year, quarter, week, month, day, hour, minute, second, or millisecond.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      truncatedDate: {
+        $dateTrunc: {
+          date: "$dob",
+          unit: "month", // year,quarter,week,month,day,hour,minite,second,millisecond
+        },
+      },
+    },
+  },
+]);
+
+// $dateToString Oprators
+// this operator formats a date as a string according to a specified format.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      Date: {
+        $dateToString: {
+          date: "$dob",
+          format: "%d-%m-%Y", // Date Specific Format
+        },
+      },
+    },
+  },
+]);
+
+// $toDate Oprators
+// this operator converts a string or number to a date object. It can be used to convert
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      Date: {
+        $toDate: "2018-01-20",
+      },
+    },
+  },
+]);
+
+// $isoDayOfWeek Oprators
+// this operator extracts the ISO day of the week from a date field, where Monday is
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      isoDayOfWeek: {
+        $isoDayOfWeek: "$dob",
+      },
+    },
+  },
+]);
+
+// $isoWeek Oprators
+// this operator extracts the ISO week number from a date field, where the first week of the year is the week containing the first Thursday.
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      isoWeekYear: {
+        $isoWeekYear: "$dob",
+      },
+    },
+  },
+]);

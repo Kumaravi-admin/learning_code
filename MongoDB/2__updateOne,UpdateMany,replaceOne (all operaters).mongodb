@@ -1,0 +1,197 @@
+db = db.getSiblingDB("student");
+
+db.createCollection("students", {
+  validator: {
+    $jsonSchema: {
+      title: "Student Schema",
+      required: ["name", "age", "class", "skills"],
+      properties: {
+        name: {
+          bsonType: "string",
+          description: "Name of the student must be a stirng and is required",
+        },
+        age: {
+          bsonType: "int",
+          description: "Age of the student must be an integer and is required",
+        },
+        class: {
+          bsonType: "string",
+          description: "Class of the student must be a string and is required",
+        },
+        skills: {
+          bsonType: "array",
+          items: {
+            bsonType: "string",
+          },
+          description:
+            "Skills of the student must be an array of strings and is required",
+        },
+      },
+    },
+  },
+});
+
+db.students.insertMany([
+  { name: "Anjesh Kumar", age: 22, class: "Btech", skills: ["HTML", "PHP"] },
+  { name: "Ashito Kumar", age: 20, class: "Btech", skills: ["React", "Js"] },
+  { name: "Aniket Kumar", age: 17, class: "Btech", skills: ["Mongo", "SQL"] },
+]);
+
+db.students.updateOne(
+  { name: "Anjesh Kumar" }, // Update the document with name "Anjesh Kumar"
+  {
+    $set: {
+      age: 17,
+      name: "Anjesh",
+    },
+  }
+);
+
+db.students.updateOne(
+  { _id: ObjectId("68410ffa1c5b77ca826c4be6") },
+  {
+    $set: {
+      // Update the document with the specific ObjectId
+      age: 17,
+      class: "M.tech",
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Aniket Kumar" },
+  {
+    $inc: {
+      age: 1, // Increment the age of the student by 1
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Anjesh" },
+  {
+    $mul: {
+      age: 2, // Multiply the age of the student by 2
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Anjesh" },
+  {
+    $unset: {
+      age: "", // Remove the age field from the document
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Anjesh" },
+  {
+    $rename: {
+      skills: "codding_skills", // Rename the skills field to codding_skills
+    },
+  }
+);
+
+db.students.updateMany(
+  {},
+  {
+    $rename: {
+      skills: "codding_skills", // Rename the skills field to codding_skills
+    },
+  }
+);
+
+db.students.updateMany(
+  {},
+  {
+    $currentDate: {
+      lastModified: true, // Set the current date  to all field,  if field not exit then this will creat the field and add current date
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Ashito Kumar" },
+  {
+    $min: {
+      age: 18, // Set the minimum age to 18, if the current age is less than 18
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Ashito Kumar" },
+  {
+    $max: {
+      age: 25, // Set the maximum age to 25, if the current age is greater than 25
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Aniket Kumar" },
+  {
+    $push: {
+      codding_skills: "Python", // Add "Python" to the codding_skills array
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Aniket Kumar" },
+  {
+    $addToSet: {
+      codding_skills: "Java", // Add "Java" to the codding_skills array only if it does not already exist
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Aniket Kumar" },
+  {
+    $pop: {
+      codding_skills: 1, // Remove the last element from the codding_skills array
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Aniket Kumar" },
+  {
+    $pop: {
+      codding_skills: -1, // Remove the first element from the codding_skills array
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Ashito Kumar" },
+  {
+    $pull: {
+      codding_skills: "Js", // Remove "Js" from the codding_skills array
+    },
+  }
+);
+
+db.students.updateOne(
+  { name: "Aniket Kumar" },
+  {
+    $pullAll: {
+      codding_skills: ["SQL", "Python"], // Remove multiple elements from the codding_skills array
+    },
+  }
+);
+
+db.students.replaceOne(
+  {
+    _id: ObjectId("684114511c5b77ca826c4be7"), // Replace the document with the specific ObjectId
+  },
+  {
+    name: "Anjesh Kumar",
+    age: 18,
+    class: "Btech",
+    codding_skills: ["Mongo", "SQL", "Python"],
+  }
+);

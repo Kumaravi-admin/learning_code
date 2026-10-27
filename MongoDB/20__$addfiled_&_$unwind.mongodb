@@ -1,0 +1,183 @@
+db.students.insertMany([
+  {
+    _id: 1,
+    firstname: "Akshay",
+    lastName: "Kumar",
+    marks: [52, 59, 67],
+    city: "Delhi",
+  },
+  {
+    _id: 2,
+    firstname: "Salman",
+    lastName: "Khan",
+    marks: [77, 74, 69],
+    city: "Mumbai",
+  },
+  {
+    _id: 3,
+    firstname: "Deepika",
+    lastName: "Padukon",
+    marks: [83, 64, 75],
+    city: null,
+  },
+  {
+    _id: 4,
+    firstname: "John",
+    lastName: "Abraham",
+    marks: [49, 66, 58],
+    city: "Goa",
+  },
+  { _id: 5, firstname: "Katrina", lastName: "Kaif", marks: [69, 74, 64] },
+]);
+
+// Example 1 $addFileds + $concat
+
+// Fetch Document and contact field in contact first name & last name and how in fullName field
+db.students.aggregate([
+  {
+    $addFields: {
+      // Add new field fullName
+      // Concatenate firstname and lastName with a space in between
+      fullName: { $concat: ["$firstname", " ", "$lastName"] },
+    },
+  },
+]);
+
+// Example 2 $addFileds + $concat
+// contact filed in existing filed
+// Fetch Document and contact field in existing _id field, show full name in _id field
+db.students.aggregate([
+  {
+    $addFields: {
+      _id: { $concat: ["$firstname", " ", "$lastName"] }, // Concatenate firstname and lastName with a space in between and store it in _id field
+    },
+  },
+]);
+
+// Example 3 $addFileds + $$REMOVE
+// Remove existing fields firstname and lastName after concatenating them into fullName
+// Fetch Document and contact field in existing _id field, show full name in _id field
+db.students.aggregate([
+  {
+    $addFields: {
+      // Add new field fullName
+      _id: { $concat: ["$firstname", " ", "$lastName"] },
+      firstname: "$$REMOVE", // Remove firstname field
+      lastName: "$$REMOVE", // Remove lastName field
+    },
+  },
+]);
+
+// Example 4 $addFieds + ifNull
+// Fetch Document and contact field in existing _id field, show full name in _id field
+// If city is null, remove it from the output
+
+db.students.aggregate([
+  {
+    $addFields: {
+      // Add new field fullName
+      _id: { $concat: ["$firstname", " ", "$lastName"] },
+      firstname: "$$REMOVE", // Remove firstname field
+      lastName: "$$REMOVE", // Remove lastName field
+      city: { $ifNull: ["$city", "$$REMOVE"] }, // If city is null, remove it from the output
+    },
+  },
+]);
+
+// Example 5 $addFieds + $cond (if else)
+// Fetch Document and contact field in existing _id field, show full name in _id field
+// If city is "Delhi", remove it from the output, otherwise keep it
+db.students.aggregate([
+  {
+    $addFields: {
+      fullName: { $concat: ["$firstname", " ", "$lastName"] },
+      firstname: "$$REMOVE", // Remove firstname field
+      lastName: "$$REMOVE", // Remove lastName field
+      city: {
+        $cond: {
+          // Conditional logic to check if city is "Delhi"
+          if: {
+            // Check if city is "Delhi"
+            $eq: ["$city", "Delhi"], //
+          },
+          then: "$$REMOVE", // If city is "Delhi", remove it from the output
+          else: "$city", // Otherwise, keep the city field
+        },
+      },
+    },
+  },
+]);
+
+// Example 6 $addFieds + $match
+
+// Match document with _id 1 and add fullName field, add firstname and lastName fields to fullName, and remove firstname and lastName fields
+db.students.aggregate([
+  { $match: { _id: 1 } }, // Match document with _id 1
+  {
+    $addFields: {
+      fullName: { $concat: ["$firstname", " ", "$lastName"] }, // Concatenate firstname and lastName with a space in between and store it in fullName field
+      firstname: "$$REMOVE", // Remove firstname field
+      lastName: "$$REMOVE", // Remove lastName field
+    },
+  },
+]);
+
+// Example 7 $addFieds + custome field
+// Match document with _id 1 and add fullName field, add age to profile, and remove firstname and lastName fields
+// Also, add a new field "age" to the "profile" object
+db.students.aggregate([
+  { $match: { _id: 1 } }, // Match document with _id 1
+  {
+    $addFields: {
+      fullName: { $concat: ["$firstname", " ", "$lastName"] },
+      firstname: "$$REMOVE", // Remove firstname field
+      lastName: "$$REMOVE", // Remove  lastName fields
+      "profile.age": 30, // Add a new field "age" to the "profile" object
+    },
+  },
+]);
+
+// Example 8 $addFieds
+// add new value in marks array
+// Match document with _id 1 and add fullName field, add a new value to the marks array, and remove firstname and lastName fields
+db.students.aggregate([
+  { $match: { _id: 1 } }, // Match document with _id 1
+  {
+    $addFields: {
+      fullName: { $concat: ["$firstname", " ", "$lastName"] },
+      firstname: "$$REMOVE",
+      lastName: "$$REMOVE",
+      marks: { $concatArrays: ["$marks", [70]] }, // Add a new value 70 to the marks array
+    },
+  },
+]);
+
+// Example 9 $addFieds
+// Match document with _id 1 and add fullName field, remove firstname and lastName fields, and calculate total marks
+db.students.aggregate([
+  { $match: { _id: 1 } },
+  {
+    $addFields: {
+      fullName: { $concat: ["$firstname", " ", "$lastName"] },
+      firstname: "$$REMOVE",
+      lastName: "$$REMOVE",
+      TatalMarks: { $sum: "$marks" }, // New Field TatalMarks in this fild show sum how marks
+    },
+  },
+]);
+
+// // Example 10 $unwind
+// Create a collection named inventory with an array field sizes
+db.inventory.insertMany([
+  { _id: 1, item: "ABC", sizes: ["S", "M", "L"] },
+  { _id: 2, item: "XYZ", sizes: ["S", "M", "L", "XL"] },
+]);
+
+// // Example 11 $unwind
+// Unwind the sizes array in the inventory collection
+// This will create a separate document for each size in the sizes array
+db.inventory.aggregate([
+  {
+    $unwind: "$sizes", // Unwind the sizes array to create a separate document for each size
+  },
+]);

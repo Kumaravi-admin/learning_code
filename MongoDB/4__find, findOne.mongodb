@@ -1,0 +1,94 @@
+db = db.getSiblingDB("school");
+
+db.students.insertMany([
+  { name: "Anjesh Kumar", age: 22, class: "Mtech", city: "Delhi" },
+  { name: "Ashito Kumar", age: 22, class: "Btech", city: "Mumbai" },
+  { name: "Aniket Kumar", age: 20, class: "Btech", city: "Delhi" },
+  { name: "Zubair Ahmad", age: 18, class: "Mtech", city: "Kolkata" },
+  { name: "Rajvir Kumar", age: 11, class: "Btech", city: "Bihar" },
+]);
+
+db.students.find({
+  class: "Btech", // find all students in Btech
+});
+
+db.students.find({
+  age: 20, // find all students with age 20
+});
+
+db.students.find({
+  city: "Delhi", // find all students in Delhi
+});
+
+// find One
+
+db.students.findOne({
+  city: "Delhi", // find one student in Delhi
+});
+
+db.students.findOne({
+  class: "Btech", // find one student in Btech
+});
+
+//find with projection
+
+db.students.findOne(
+  {
+    class: "Btech", // find one student in Btech
+  },
+  {
+    name: 1, // projection to include name
+    age: 1,
+    _id: 0,
+  }
+);
+
+// Projection
+
+db.students.find().projection({
+  name: 1, // projection to include name
+  age: 1,
+  _id: 0,
+});
+
+db.students
+  .find({
+    class: "Btech", // find all students in Btech
+  })
+  .projection({
+    name: 1, // projection to include name
+    age: 1,
+    _id: 0,
+  });
+
+db.students.find().count(); // Return total count of all students
+
+db.students
+  .find({
+    class: "Btech",
+  })
+  .count(); // Return total count of all students in Btech
+
+db.students.find().sort({
+  city: 1, // sort by city in ascending order
+});
+
+db.students.find().sort({
+  age: -1, // sort by age in descending order
+});
+
+db.students.find({}, { name: 1, city: 1, _id: 0 }).sort({
+  age: 1, // sort by age in ascending order
+});
+
+db.students.find().limit(2);
+// Limit the result to 2 documents
+
+db.students.find().limit(2).skip(0);
+// Skip the first 0 documents and limit the result to 2 documents
+
+db.students.find().limit(2).skip(2);
+// Skip the first 2 documents and limit the result to 2 documents
+
+db.students.find().limit(2).skip(4);
+// Skip the first 4 documents and limit the result to 2 documents

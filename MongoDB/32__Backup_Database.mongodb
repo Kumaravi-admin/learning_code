@@ -1,0 +1,30 @@
+
+
+// 
+
+// Database Backup Command
+mongodump -d school -o c:\backup // Backup the 'school' database to 'c:\backup'
+
+mongodump --db school --out c:\backup  // second way to backup the 'school' database
+
+// Collection Backup Command
+mongodump -d school -c students -o c:\backup // Backup the 'students' collection from the 'school' database to 'c:\backup'
+mongodump --db school --collection students --out c:\backup // second way to backup the 'students' collection
+
+// All Databases Backup Command
+mongodump -o c:\backup // Backup all databases to 'c:\backup'
+mongodump --out c:\backup // second way to backup all databases
+
+
+
+
+// those commands are used to restore the database or collection from the backup created above
+// Restore Collection Command
+mongorestore -d school -c students C:\backup\school\students.bson // Restore the 'students' collection from the backup
+
+
+// Restore Database Command
+mongorestore -d office C:\backup\school // Restore the 'school' database from the backup
+
+// Restore All Databases Command
+mongorestore --dir C:\backup // Restore all databases from the backup

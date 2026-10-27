@@ -1,0 +1,270 @@
+//---------------------------------------------------------------------------------------------------------
+// $group // Group documents by a specified field and perform aggregations on the grouped data
+//---------------------------------------------------------------------------------------------------------
+db.students.insertMany([
+  { _id: 1, name: "Akshay Kumar", age: 23, class: "BCA" },
+  { _id: 2, name: "Salman Khan", age: 24, class: "Btech" },
+  { _id: 3, name: "Shahid Kapoor", age: 20, class: "BSc" },
+  { _id: 4, name: "John Abraham", age: 19, class: "BCA" },
+  { _id: 5, name: "Amir Khan", age: 24, class: "Btech" },
+  { _id: 6, name: "Salman Khan", age: 21, class: "BSc" },
+  { _id: 7, name: "Suniel Shetty", age: 22, class: "BCA" },
+  { _id: 8, name: "Kartik Aryan", age: 20, class: "Btech" },
+]);
+
+// $group
+// Group documents by a specified field and perform aggregations on the grouped data
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class", // Group by class field
+    },
+  },
+]);
+
+// $sum
+// Group documents by a Class field and calculate the sum of a field in each group
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class", // Group by class field
+      count: { $sum: 1 }, // Count custom filed name
+    },
+  },
+]);
+
+// $sum + $match
+// Group documents by a Class field and calculate the sum of a field in each group after matching a condition
+db.students.aggregate([
+  { $match: { age: { $gt: 20 } } }, // Match students with age greater than 20
+  {
+    $group: {
+      _id: "$class", // Group by class field
+      count: { $sum: 1 }, // Count custom filed name
+    },
+  },
+]);
+// $count
+
+// Count the number of documents in each group
+// Group documents by a Class field and count the number of documents in each group
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class",
+      count: { $count: {} },
+    }, // count is custom filed name
+  },
+]);
+
+// $count + $sort
+// Group documents by a Class field and count the number of documents in each group, then sort by count
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class",
+      count: { $count: {} },
+    }, // count is custom filed name
+  },
+  { $sort: { count: 1 } }, // Sort by count in descending order
+]);
+
+// $push
+// Group documents by a Class field and push all student names into an array
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class",
+      students: { $push: "$name" }, // Push all student names into an array
+    },
+  },
+]);
+
+// $push
+// Group documents by a Class field and push all student names into an array,
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class",
+      students: { $push: "$$ROOT" }, // Push all student documents into an array using $$ROOT
+    },
+  },
+]);
+// $addToSet
+// Group documents by a Class field and add unique student names to an array
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class",
+      students: { $addToSet: "$name" }, // Add unique student names to an array
+    },
+  },
+]);
+
+// $max
+// Group documents by a Class field and find the maximum age of students in each class
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class",
+      Maximum_Student_Age: { $max: "$age" }, // Find the maximum age of students in each class
+    },
+  },
+]);
+
+// $min
+// Group documents by a Class field and find the minimum age of students in each class
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class",
+      Minimum_Student_Age: { $min: "$age" }, // Find the minimum age of students in each class
+    },
+  },
+]);
+
+// $avg
+// Group documents by a Class field and calculate the average age of students in each class
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class", // Group by class field
+      Avrage_Age: { $avg: "$age" }, // Calculate the average age of students in each class
+    },
+  },
+]);
+
+// Calculate the average age of all students
+// Group documents without any specific field to get the average age of all students
+db.students.aggregate([
+  {
+    $group: {
+      _id: null, // No specific field to group by, so we use null
+      Avrage_Age: { $avg: "$age" }, // Calculate the average age of all students
+    },
+  },
+]);
+
+// $median
+// Calculate the median age of all students
+
+db.students.aggregate([
+  {
+    $group: {
+      _id: null, // No specific field to group by, so we use null
+      Median_Age: {
+        $median: {
+          // Calculate the median age of all students
+          input: "$age", // Field to calculate the median on
+          method: "approximate", // Use "exact" for exact median calculation
+        },
+      },
+    },
+  },
+]);
+
+// Calculate the median age of students in each class
+// Group documents by a Class field and calculate the median age of students in each class
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class", // Group by class field
+      Median_Age: {
+        // Custom field name for median age
+        $median: {
+          input: "$age", // Field to calculate the median on
+          method: "approximate", // Use "exact" for exact median calculation
+        },
+      },
+    },
+  },
+]);
+
+// $first
+// Group documents by a Class field and get the first student name in each class
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class", // Group by class field
+      First_Student: { $first: "$name" }, // Get the first student name in each class
+    },
+  },
+]);
+
+// $last
+// Group documents by a Class field and get the last student name in each class
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class", // Group by class field
+      Last_Student: { $last: "$$ROOT" }, // Get the last student name in each class
+    },
+  },
+]);
+
+// $top
+// Group documents by a Class field and get the top student based on age in each class
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class", // Group by class field
+      Top_students: {
+        // Custom field name for top students
+        $top: {
+          output: ["$name", "$class", "$age"], // Fields to include in the output
+          sortBy: { age: 1 }, // Sort by age in ascending order
+        },
+      },
+    },
+  },
+]);
+// $topN
+// Group documents by a Class field and get the top N students based on age in each class
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class", // Group by class field
+      Top_students: {
+        // Custom field name for top students
+        $topN: {
+          output: ["$name", "$class", "$age"], // Fields to include in the output
+          sortBy: { age: 1 }, // Sort by age in ascending order
+          n: 3, // Get the top 2 students in each class
+        },
+      },
+    },
+  },
+]);
+// $bottom
+// Group documents by a Class field and get the bottom student based on age in each class
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class", // Group by class field
+      Top_students: {
+        // Custom field name for bottom students
+        $bottom: {
+          output: ["$name", "$class", "$age"], // Fields to include in the output
+          sortBy: { age: 1 }, // Sort by age in ascending order
+        },
+      },
+    },
+  },
+]);
+// $bottomN
+// Group documents by a Class field and get the bottom N students based on age in each class
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$class", // Group by class field
+      Top_students: {
+        // Custom field name for bottom students
+        $bottomN: {
+          output: ["$name", "$class", "$age"], // Fields to include in the output
+          sortBy: { age: 1 }, // Sort by age in ascending order
+          n: 3, // Get the bottom 3 students in each class
+        },
+      },
+    },
+  },
+]);

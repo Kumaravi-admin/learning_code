@@ -1,0 +1,58 @@
+db = db.getSiblingDB("school");
+
+db.students.insertMany([
+  { name: "Anjesh Kumar", age: 22, class: "Mtech", city: "Delhi" },
+  { name: "Ashito Kumar", age: 22, class: "Btech", city: "Mumbai" },
+  { name: "Aniket Kumar", age: 20, class: "Btech", city: "Delhi" },
+  { name: "Zubair Ahmad", age: 18, class: "Mtech", city: "Kolkata" },
+  { name: "Rajvir Kumar", age: 11, class: "Btech", city: "Bihar" },
+]);
+
+db.students.find({
+  age: { $eq: 20 },
+}); //Values are equal
+
+db.students.find({ age: 20 });
+
+db.students.find({
+  age: { $ne: 20 },
+}); // values are not equal
+
+db.students.find({
+  age: { $in: [20, 18, 17] }, // value is matched within an array
+});
+
+db.students.find({
+  age: { $nin: [20, 18, 17] }, // // value is not in the array
+});
+
+db.students.find({
+  age: { $gt: 20 }, // value is greater than another values
+});
+
+db.students.find({
+  age: { $gte: 20 }, // value is greater than or equal to  another value
+});
+
+db.students.find({
+  age: { $lt: 20 }, // value is less than another value
+});
+
+db.students.find({
+  age: { $lte: 20 }, // values is less than or equal to another value
+});
+
+db.students.updateMany(
+  {
+    age: { $lt: 20 }, // Update all students with age less than 20
+  },
+  {
+    $set: {
+      class: "12th", // Set class to "12th" for students with age less than 20
+    },
+  }
+);
+
+db.students.deleteMany({
+  age: { $lt: 20 }, // Delete all students with age less than 20
+});

@@ -1,0 +1,75 @@
+db = db.getSiblingDB("school");
+
+db.students.insertMany([
+  { name: "Anjesh Kumar", age: 22, class: "Mtech", city: "Delhi" },
+  { name: "Ashito Kumar", age: 22, class: "Btech", city: "Mumbai" },
+  { name: "Aniket Kumar", age: 20, class: "Btech", city: "Delhi" },
+  { name: "Zubair Ahmad", age: 18, class: "Mtech", city: "Kolkata" },
+  { name: "Rajvir Kumar", age: 11, class: "Btech", city: "Bihar" },
+]);
+
+// $regex operator :: Returns documents where the field matches the regex pattern
+
+db.students.find({
+  name: { $regex: "Kumar" },
+  // Find students where name contains "Kumar"
+});
+
+db.students.find({
+  name: { $regex: /kumar/i }, // Find students where name contains "kumar" (case-insensitive)
+});
+
+db.students.find({
+  name: { $regex: "An" }, // Find students where name starts with "An"
+});
+
+db.students.find({
+  name: { $regex: "^A" }, // Find students where name starts with "A"
+});
+
+db.students.find({
+  name: { $regex: "ad$" }, // Find students where name ends with "ad"
+});
+//
+//
+//
+//
+//
+//
+//---------------------------------------------------------
+db.monthlyBudget.insertMany([
+  { _id: 1, category: "food", budget: 400, spent: 450 },
+  { _id: 2, category: "drink", budget: 100, spent: 150 },
+  { _id: 3, category: "clothes", budget: 100, spent: 50 },
+  { _id: 4, category: "misc", budget: 500, spent: 300 },
+  { _id: 5, category: "travel", budget: 200, spent: 650 },
+]);
+
+db.sales.insertMany([
+  { _id: 1, product: "apple iPhone 13", cost: 800, price: 1000 },
+  { _id: 2, product: "Samsung Galaxy S21", cost: 700, price: 950 },
+  { _id: 3, product: "Apple Watch", cost: 300, price: 350 },
+]);
+
+// $expr operator :: Allows field compairison using within document
+
+db.monthlyBudget.find({
+  $expr: { $gt: ["$spent", "$budget"] }, // Find documents where spent is greater than budget
+});
+
+db.sales.find({
+  $expr: { $gt: ["$price", { $multiply: ["$cost", 1.2] }] }, // Find documents where price is greater than cost multiplied by 1.2
+});
+
+// $mod operator :: Matches numbers base on remainder
+db.sales.find({
+  cost: { $mod: [7, 0] }, // Find documents where cost is divisible by 7
+});
+
+db.sales.find({
+  cost: { $mod: [7.0, 0] }, // Find documents where cost is divisible by 7.0
+});
+
+db.sales.find({
+  cost: { $mod: [-7, -0] }, // Find documents where cost is divisible by -7
+});

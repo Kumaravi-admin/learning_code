@@ -1,0 +1,75 @@
+db = db.getSiblingDB("school");
+
+db.students.insertMany([
+  { _id: 1, name: "Akshay Kumar", age: 23, class: "BCA" },
+  { _id: 2, name: "Salman Khan", age: 24, class: "Btech" },
+  { _id: 3, name: "Shahid Kapoor", age: 20, class: "BSc" },
+  { _id: 4, name: "John Abraham", age: 19, class: "BCA" },
+  { _id: 5, name: "Amir Khan", age: 24, class: "Btech" },
+  { _id: 6, name: "Salman Khan", age: 21, class: "BSc" },
+  { _id: 7, name: "Suniel Shetty", age: 22, class: "BCA" },
+  { _id: 8, name: "Kartik Aryan", age: 20, class: "Btech" },
+]);
+
+// findOneAndUpdate ::  // Return unpudate document and update the document
+db.students.findOneAndUpdate({ name: "Kartik Aryan" }, { $set: { age: 30 } });
+
+//findOneAndUpdate :: // Update the Document and Return update document
+db.students.findOneAndUpdate(
+  { name: "Kartik Aryan" },
+  { $set: { age: 20 } },
+  { returnDocument: "after" } // return updated document
+);
+
+//findOneAndUpdate :: // Update the Document and Return update document with projection (which filed you wont to see)
+db.students.findOneAndUpdate(
+  { name: "Kartik Aryan" }, // filter
+  { $set: { age: 30 } }, // update document
+  {
+    returnDocument: "after", // return updated document
+    projection: { name: 1, age: 1, _id: 0 }, // projection
+  }
+);
+
+// findOneAndUpdate :: // When filter not find any matched then return null
+db.students.findOneAndUpdate(
+  { name: "Anjesh Kumar" }, // filter
+  { $set: { age: 30 } }, // update document
+  { returnDocument: "after" } // return updated document
+);
+
+// findOneAndUpdate :: // when filter not find any matched then add new document and return the new document
+db.students.findOneAndUpdate(
+  { name: "Anjesh Kumar" }, // filter
+  { $set: { age: 30 } }, // update document
+  {
+    returnDocument: "after", // return updated document
+    projection: { name: 1, age: 1, _id: 0 }, // projection
+    upsert: true, // if filter not find any matched then add new document
+  }
+);
+
+// findOneAndUpdate :: // Sort the document  accending order before update, update the first document and return the updated document
+db.students.findOneAndUpdate(
+  { name: "Salman Khan" },
+  { $set: { class: "BTT" } },
+  {
+    short: { age: 1 }, // sort by age in ascending order
+  }
+);
+
+// findOneAndReplace :: // Replace the document  first matched  and return the updated document
+db.students.findOneAndReplace(
+  { name: "Akshay Kumar" }, // filter
+  { name: "Sanjay Dutt", age: 35, class: "BCom" },
+  { returnDocument: "after" } // return updated document
+);
+
+// findOneAndDelete :: // First sort the document by age in ascending order, delete the first matched document and return the deleted document
+db.students.findOneAndDelete(
+  { name: "Salman Khan" },
+  {
+    projection: { name: 1, age: 1, _id: 0 }, // projection
+    sort: { age: 1 }, // sort by age in ascending order
+  }
+);
