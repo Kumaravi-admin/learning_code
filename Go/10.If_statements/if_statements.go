@@ -105,6 +105,39 @@ Initialize the				      /                                             │
 
 package main
 
+import "fmt"
+
+// In this lesson we will cover:
+// 1. The if statement
+// 2. the if-else statment
+// 3. the if-else-if statement
+// 4. Variable declaration within if.
+
 func main() {
 
+        age := 10
+
+
+        if age >= 18 {
+            fmt.Println("You are an adult!")
+        } else if age >= 13 {
+            fmt.Println("You are teenager!")
+        }else {
+            fmt.Println("You are a child!")
+        }
+
+
+
+        // Variable declaration within if. (Shorthand declaration)
+        if even := isEven(age); 
+           even == true {
+            fmt.Println("Age is even!")
+        }
+
+
+
+}
+
+func isEven(n int) bool {
+    return n&1 == 0
 }
